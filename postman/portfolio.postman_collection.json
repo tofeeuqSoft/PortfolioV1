@@ -1,0 +1,239 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-portfolio-api-0001",
+    "name": "Portfolio API",
+    "description": "API tests for the MERN portfolio. Auth uses an httpOnly cookie, so Postman stores it automatically after Login.\n\nOrder: run **Auth / Login** first, then admin folders.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "projectId", "value": "" },
+    { "key": "projectSlug", "value": "portfolio-website" },
+    { "key": "skillId", "value": "" },
+    { "key": "serviceId", "value": "" },
+    { "key": "postId", "value": "" },
+    { "key": "messageId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('admin user returned', () => pm.expect(pm.response.json().data.role).to.eql('admin'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Me",
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));"] } }
+          ],
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "auth", "me"] }
+          }
+        },
+        {
+          "name": "Change password (no-op guard)",
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('400 for wrong current password', () => pm.response.to.have.status(400));"] } }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"currentPassword\": \"definitely-wrong\",\n  \"newPassword\": \"anything123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/password", "host": ["{{baseUrl}}"], "path": ["api", "auth", "password"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/auth/logout", "host": ["{{baseUrl}}"], "path": ["api", "auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Health",
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));", "pm.test('ok status', () => pm.expect(pm.response.json().data.status).to.eql('ok'));"] } }
+          ],
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/health", "host": ["{{baseUrl}}"], "path": ["api", "health"] } }
+        },
+        {
+          "name": "Profile",
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));", "pm.test('has fullName', () => pm.expect(pm.response.json().data).to.have.property('fullName'));"] } }
+          ],
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/profile", "host": ["{{baseUrl}}"], "path": ["api", "profile"] } }
+        },
+        {
+          "name": "Projects list",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/projects", "host": ["{{baseUrl}}"], "path": ["api", "projects"] } }
+        },
+        {
+          "name": "Project detail (increments views)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/projects/{{projectSlug}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{projectSlug}}"] } }
+        },
+        {
+          "name": "Skills (populated projects)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/skills", "host": ["{{baseUrl}}"], "path": ["api", "skills"] } }
+        },
+        {
+          "name": "Education",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/education", "host": ["{{baseUrl}}"], "path": ["api", "education"] } }
+        },
+        {
+          "name": "Training",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/training", "host": ["{{baseUrl}}"], "path": ["api", "training"] } }
+        },
+        {
+          "name": "Services",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/services", "host": ["{{baseUrl}}"], "path": ["api", "services"] } }
+        },
+        {
+          "name": "Testimonials",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/testimonials", "host": ["{{baseUrl}}"], "path": ["api", "testimonials"] } }
+        },
+        {
+          "name": "Posts (published)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/posts", "host": ["{{baseUrl}}"], "path": ["api", "posts"] } }
+        },
+        {
+          "name": "GitHub summary",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/github/summary", "host": ["{{baseUrl}}"], "path": ["api", "github", "summary"] } }
+        },
+        {
+          "name": "Analytics (public)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/analytics/public", "host": ["{{baseUrl}}"], "path": ["api", "analytics", "public"] } }
+        },
+        {
+          "name": "Track page view",
+          "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/analytics/pageview", "host": ["{{baseUrl}}"], "path": ["api", "analytics", "pageview"] } }
+        },
+        {
+          "name": "robots.txt",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/robots.txt", "host": ["{{baseUrl}}"], "path": ["robots.txt"] } }
+        },
+        {
+          "name": "sitemap.xml",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/sitemap.xml", "host": ["{{baseUrl}}"], "path": ["sitemap.xml"] } }
+        }
+      ]
+    },
+    {
+      "name": "Contact",
+      "item": [
+        {
+          "name": "Send message (valid)",
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('201 Created', () => pm.response.to.have.status(201));", "pm.test('success true', () => pm.expect(pm.response.json().success).to.be.true);"] } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Postman Tester\",\n  \"email\": \"postman@example.com\",\n  \"subject\": \"API test\",\n  \"message\": \"This message is sent by the Postman collection.\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/contact", "host": ["{{baseUrl}}"], "path": ["api", "contact"] }
+          }
+        },
+        {
+          "name": "Send message (invalid -> 400)",
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('400 Bad Request', () => pm.response.to.have.status(400));", "pm.test('field errors present', () => pm.expect(pm.response.json().errors.length).to.be.above(0));"] } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"email\": \"not-an-email\",\n  \"message\": \"short\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/contact", "host": ["{{baseUrl}}"], "path": ["api", "contact"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin (requires Login)",
+      "item": [
+        {
+          "name": "Create project",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "const d = pm.response.json().data;",
+                  "pm.collectionVariables.set('projectId', d._id);",
+                  "pm.collectionVariables.set('projectSlug', d.slug);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Postman Test Project\",\n  \"slug\": \"postman-test-{{$timestamp}}\",\n  \"summary\": \"created by Postman\",\n  \"category\": \"Backend\",\n  \"techStack\": [\"Node.js\"],\n  \"order\": 99\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects", "host": ["{{baseUrl}}"], "path": ["api", "projects"] }
+          }
+        },
+        {
+          "name": "Update project",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Postman Test Project (updated)\",\n  \"featured\": true\n}" },
+            "url": { "raw": "{{baseUrl}}/api/projects/{{projectId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{projectId}}"] }
+          }
+        },
+        {
+          "name": "Delete project",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/projects/{{projectId}}", "host": ["{{baseUrl}}"], "path": ["api", "projects", "{{projectId}}"] }
+          }
+        },
+        {
+          "name": "List messages (inbox)",
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));"] } }
+          ],
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/messages", "host": ["{{baseUrl}}"], "path": ["api", "messages"] } }
+        },
+        {
+          "name": "Analytics summary",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/analytics/summary", "host": ["{{baseUrl}}"], "path": ["api", "analytics", "summary"] } }
+        },
+        {
+          "name": "Unauthorized guard (no cookie -> 401)",
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('401 without session', () => pm.response.to.have.status(401));"] } }
+          ],
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/messages", "host": ["{{baseUrl}}"], "path": ["api", "messages"] } }
+        }
+      ]
+    }
+  ]
+}
