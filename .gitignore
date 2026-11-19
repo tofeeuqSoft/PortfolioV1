@@ -6,7 +6,16 @@ build/
 *.log
 npm-debug.log*
 .DS_Store
+# Uploaded assets are served statically. They are committed so they ship with
+# the repo (free hosts have no persistent disk). Comment out to keep new
+# uploads out of git.
 server/uploads/*
 !server/uploads/.gitkeep
+!server/uploads/*.png
+!server/uploads/*.jpg
+!server/uploads/*.jpeg
+!server/uploads/*.webp
+!server/uploads/*.gif
+!server/uploads/*.pdf
 client/dist/
 coverage/
